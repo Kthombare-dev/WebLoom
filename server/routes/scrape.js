@@ -3,12 +3,10 @@ import { insertScrapedContent, getContentCount, getAllScrapedContent } from '../
 
 const router = express.Router();
 
-// POST /api/scrape - Save scraped content
 router.post('/', async (req, res) => {
   try {
     const { url, title, content, timestamp } = req.body;
 
-    // Validation
     if (!url || !content) {
       return res.status(400).json({ 
         error: 'Missing required fields: url and content are required' 
@@ -20,7 +18,6 @@ router.post('/', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Insert into database
     const id = await insertScrapedContent(
       url,
       title,
@@ -44,7 +41,6 @@ router.post('/', async (req, res) => {
       stats: {
         totalScraped: totalCount
       },
-      // Request metadata for testing/debugging
       args: req.query,
       headers: req.headers,
       url: req.originalUrl || req.url
@@ -58,7 +54,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/scrape - Get all scraped content (for testing/admin)
 router.get('/', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
@@ -80,7 +75,6 @@ router.get('/', async (req, res) => {
         total: totalCount,
         hasMore: offset + content.length < totalCount
       },
-      // Request metadata for testing/debugging
       args: req.query,
       headers: req.headers,
       url: req.originalUrl || req.url

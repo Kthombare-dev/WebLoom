@@ -52,8 +52,7 @@ function App() {
   const lastUpdatedLabel = useMemo(() => {
     if (!scrapedContent.length) return '';
     const date = scrapedContent[0]?.created_at || scrapedContent[0]?.timestamp;
-    if (!date) return '';
-    return new Date(date).toLocaleString();
+    return formatDateTime(date, { dateStyle: 'medium', timeStyle: 'short' });
   }, [scrapedContent]);
 
   useEffect(() => {
@@ -326,19 +325,13 @@ function App() {
                 let hostname = 'Unknown source';
                 try {
                   hostname = new URL(item.url).hostname;
-                } catch {
-                  // Ignore parsing errors
-                }
+                } catch {}
 
                 return (
                   <article key={item.id} className="content-item">
                     <div className="content-meta">
                       <span>{hostname}</span>
-                      <span>
-                        {item.timestamp
-                          ? new Date(item.timestamp).toLocaleDateString()
-                          : 'Unknown date'}
-                      </span>
+                    <span>{formatDateTime(item.timestamp, { dateStyle: 'medium' }) || 'Unknown date'}</span>
                     </div>
                     <h3>{item.title || 'Untitled page'}</h3>
                     <p>{item.content?.slice(0, 220)}...</p>

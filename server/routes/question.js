@@ -4,7 +4,6 @@ import { generateAnswer, isAIAvailable } from '../services/aiService.js';
 
 const router = express.Router();
 
-// POST /api/question - Ask a question with AI-powered answers
 router.post('/', async (req, res) => {
   try {
     const { question } = req.body;
@@ -15,21 +14,17 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Search for relevant content
     const userId = req.user?.id || null;
 
     let searchResults = await searchScrapedContent(question, userId, 10);
     
-    // If no search results, get recent content to use with AI
     if (searchResults.length === 0) {
       const allContent = await getAllScrapedContent(5, 0, userId);
       if (allContent.length > 0) {
-        // Use recent content even if search didn't match
         searchResults = allContent;
       }
     }
 
-    // Format response with reference links
     const references = searchResults.map(item => ({
       id: item.id,
       url: item.url,
@@ -41,18 +36,15 @@ router.post('/', async (req, res) => {
     let answer;
     let aiUsed = false;
 
-    // Use AI if available and we have content
     if (isAIAvailable() && searchResults.length > 0) {
       try {
         answer = await generateAnswer(question, searchResults);
         aiUsed = true;
       } catch (aiError) {
         console.error('AI generation error:', aiError);
-        // Fallback to basic answer if AI fails
         answer = `Found ${searchResults.length} content item(s). See the reference links below for more details.`;
       }
     } else if (searchResults.length > 0) {
-      // Fallback: Basic answer if AI not available
       answer = `Found ${searchResults.length} content item(s). See the reference links below for more details.
 
 Note: AI features are not enabled. Set GEMINI_API_KEY in your .env file to get AI-powered answers.`;
@@ -67,7 +59,6 @@ Note: AI features are not enabled. Set GEMINI_API_KEY in your .env file to get A
       references: references,
       aiPowered: aiUsed,
       ...(aiUsed && { note: 'Answer generated using Gemini AI' }),
-      // Request metadata for testing/debugging
       args: req.query,
       headers: req.headers,
       url: req.originalUrl || req.url

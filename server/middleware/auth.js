@@ -25,7 +25,7 @@ export function optionalAuth(req, res, next) {
     try {
       req.user = jwt.verify(token, JWT_SECRET);
     } catch (error) {
-      // Ignore errors for optional auth
+      req.user = null;
     }
   }
   next();

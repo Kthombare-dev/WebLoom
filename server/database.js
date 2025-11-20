@@ -11,13 +11,10 @@ const DB_FILE = join(__dirname, 'webloom.db');
 let db = null;
 let SQL = null;
 
-// Initialize SQL.js and database
 export async function initDatabase() {
   try {
-    // Initialize SQL.js (for Node.js, no locateFile needed)
     SQL = await initSqlJs();
 
-    // Load existing database or create new one
     if (existsSync(DB_FILE)) {
       const buffer = readFileSync(DB_FILE);
       db = new SQL.Database(buffer);
@@ -27,7 +24,6 @@ export async function initDatabase() {
       console.log('✅ New database created');
     }
 
-    // Create users table for authentication
     db.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +37,6 @@ export async function initDatabase() {
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)
     `);
 
-    // Create scraped_content table if it doesn't exist
     db.run(`
       CREATE TABLE IF NOT EXISTS scraped_content (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,7 +52,6 @@ export async function initDatabase() {
 
     ensureScrapedContentHasUserId();
 
-    // Create indexes for better performance
     db.run(`
       CREATE INDEX IF NOT EXISTS idx_url ON scraped_content(url)
     `);
@@ -66,7 +60,6 @@ export async function initDatabase() {
       CREATE INDEX IF NOT EXISTS idx_timestamp ON scraped_content(timestamp)
     `);
 
-    // Save the database to file
     saveDatabase();
     
     console.log('✅ Database initialized successfully (SQLite)');
@@ -76,7 +69,6 @@ export async function initDatabase() {
   }
 }
 
-// Save database to file
 function saveDatabase() {
   try {
     const data = db.export();
@@ -88,7 +80,6 @@ function saveDatabase() {
   }
 }
 
-// Ensure database is initialized
 async function ensureDb() {
   if (!db) {
     await initDatabase();
@@ -122,7 +113,6 @@ export async function insertScrapedContent(url, title, content, timestamp, userI
   stmt.step();
   stmt.free();
   
-  // Get the last inserted ID
   const result = db.exec('SELECT last_insert_rowid() as id');
   const id = result[0].values[0][0];
   
