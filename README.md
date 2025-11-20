@@ -1,5 +1,3 @@
-Here’s a full `README.md` you can drop at the repo root:
-
 ---
 
 # WebLoom – Chrome Extension + AI-Powered Q&A Platform
@@ -159,4 +157,4 @@ Full cURL examples live in `server/API_ENDPOINTS.md`.
 
 ---
 
-Happy scraping!
+Made By Ketan Thombare
