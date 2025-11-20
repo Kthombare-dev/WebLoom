@@ -18,17 +18,15 @@ Backend Express server for the WebLoom AI Q&A platform.
 
 2. **Configure environment:**
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local and add your GEMINI_API_KEY
+   cp env.sample .env.local
+   # Edit .env.local and set your keys/secrets
    ```
    
-   **Get a free Gemini API key:**
-   - Go to https://makersuite.google.com/app/apikey
-   - Sign in with your Google account
-   - Click "Create API Key"
-   - Copy the key and add it to `.env.local` as `GEMINI_API_KEY=your_key_here`
+   Required variables:
+   - `GEMINI_API_KEY` – get it from https://makersuite.google.com/app/apikey
+   - `JWT_SECRET` – any secure random string for signing auth tokens
    
-   **Note:** The server uses `.env.local` for configuration. The server will work without the API key, but AI features will be disabled.
+   **Note:** `.env.local` is used for all secrets and is git-ignored.
 
 3. **Start the server:**
    ```bash
@@ -40,14 +38,37 @@ Backend Express server for the WebLoom AI Q&A platform.
    npm run dev
    ```
 
-4. **Server will run on:** `http://localhost:3000`
+4. **Server will run on:** `http://localhost:3002`
 
 ## API Endpoints
 
 ### Health Check
 - `GET /health` - Check if server is running
 
-### Scrape Content
+### Authentication
+
+- `POST /api/auth/signup` – Create a new account
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "secret123"
+  }
+  ```
+
+- `POST /api/auth/login` – Obtain a JWT before scraping
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "secret123"
+  }
+  ```
+
+Both responses return `{ token, user }`. Use the token in subsequent requests:
+```
+Authorization: Bearer <token>
+```
+
+### Scrape Content (requires auth token)
 - `POST /api/scrape` - Save scraped content from extension
   ```json
   {
@@ -62,7 +83,7 @@ Backend Express server for the WebLoom AI Q&A platform.
   - Query params: `?limit=50&offset=0`
 
 ### Questions (AI-Powered)
-- `POST /api/question` - Ask a question (uses Gemini AI if API key is set)
+- `POST /api/question` - Ask a question (uses Gemini AI if API key is set). If a token is provided, answers only use that user’s scraped content; otherwise, it falls back to all public content.
   ```json
   {
     "question": "What is machine learning?"
@@ -81,13 +102,21 @@ Uses SQLite (`webloom.db`) with `sql.js` (pure JavaScript implementation, no nat
 ### Schema
 
 ```sql
+users (
+  id INTEGER PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
 scraped_content (
   id INTEGER PRIMARY KEY,
   url TEXT NOT NULL,
   title TEXT,
   content TEXT NOT NULL,
   timestamp TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_id INTEGER REFERENCES users(id)
 )
 ```
 
@@ -95,7 +124,7 @@ scraped_content (
 
 - [ ] Integrate AI model (Gemini Flash, OpenAI, etc.)
 - [ ] Add vector database for semantic search
-- [ ] Implement user authentication
+- [x] Implement user authentication
 - [ ] Add content management endpoints
 - [ ] Add rate limiting
 - [ ] Add request validation middleware

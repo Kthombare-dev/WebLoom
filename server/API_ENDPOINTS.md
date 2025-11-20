@@ -62,15 +62,39 @@ curl http://localhost:3002/
 
 ---
 
-## 3. Scrape Content
+## 3. Authentication
+
+### POST /api/auth/signup
+```bash
+curl -X POST http://localhost:3002/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+```
+
+### POST /api/auth/login
+```bash
+curl -X POST http://localhost:3002/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+```
+
+Both endpoints return `{ token, user }`. Use the token for authorized requests:
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 4. Scrape Content (requires token)
 
 ### POST /api/scrape
 Save scraped content from the Chrome extension.
 
-**Request:**
+**Request (remember Authorization header):**
 ```bash
 POST http://localhost:3002/api/scrape
 Content-Type: application/json
+Authorization: Bearer <token>
 ```
 
 **Request Body:**
@@ -111,6 +135,7 @@ Content-Type: application/json
 ```bash
 curl -X POST http://localhost:3002/api/scrape \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
   -d '{
     "url": "https://example.com/article",
     "title": "Example Article",
@@ -124,9 +149,10 @@ curl -X POST http://localhost:3002/api/scrape \
 ### GET /api/scrape
 Get all scraped content with pagination.
 
-**Request:**
+**Request (requires token):**
 ```bash
 GET http://localhost:3002/api/scrape?limit=10&offset=0
+Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
@@ -166,7 +192,8 @@ GET http://localhost:3002/api/scrape?limit=10&offset=0
 
 **cURL:**
 ```bash
-curl http://localhost:3002/api/scrape?limit=10&offset=0
+curl http://localhost:3002/api/scrape?limit=10&offset=0 \
+  -H "Authorization: Bearer <token>"
 ```
 
 ---
@@ -237,11 +264,12 @@ curl -X POST http://localhost:3002/api/question \
 2. **Get All Scraped Content**
    - Method: GET
    - URL: `http://localhost:3002/api/scrape?limit=10&offset=0`
+   - Headers: `Authorization: Bearer <token>`
 
 3. **Save Scraped Content**
    - Method: POST
    - URL: `http://localhost:3002/api/scrape`
-   - Headers: `Content-Type: application/json`
+   - Headers: `Content-Type: application/json`, `Authorization: Bearer <token>`
    - Body (raw JSON):
      ```json
      {
@@ -291,6 +319,7 @@ curl -X POST http://localhost:3002/api/question \
    ```bash
    curl -X POST http://localhost:3002/api/question \
      -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <token>" \
      -d '{"question": "What is the main topic?"}'
    ```
 

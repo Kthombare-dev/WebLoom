@@ -15,10 +15,21 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Insert into database
-    const id = await insertScrapedContent(url, title, content, timestamp || new Date().toISOString());
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
-    const totalCount = await getContentCount();
+    // Insert into database
+    const id = await insertScrapedContent(
+      url,
+      title,
+      content,
+      timestamp || new Date().toISOString(),
+      userId
+    );
+
+    const totalCount = await getContentCount(userId);
 
     res.status(201).json({
       success: true,
@@ -52,9 +63,13 @@ router.get('/', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
 
-    const content = await getAllScrapedContent(limit, offset);
-    const totalCount = await getContentCount();
+    const content = await getAllScrapedContent(limit, offset, userId);
+    const totalCount = await getContentCount(userId);
 
     res.json({
       success: true,

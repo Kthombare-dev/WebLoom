@@ -5,6 +5,8 @@ import { initDatabase } from './database.js';
 import { initAI } from './services/aiService.js';
 import scrapeRoutes from './routes/scrape.js';
 import questionRoutes from './routes/question.js';
+import authRoutes from './routes/auth.js';
+import { authMiddleware, optionalAuth } from './middleware/auth.js';
 
 // Load .env.local file
 dotenv.config({ path: '.env.local' });
@@ -27,8 +29,9 @@ initDatabase().catch(err => {
 initAI();
 
 // Routes
-app.use('/api/scrape', scrapeRoutes);
-app.use('/api/question', questionRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/scrape', authMiddleware, scrapeRoutes);
+app.use('/api/question', optionalAuth, questionRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

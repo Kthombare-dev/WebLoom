@@ -13,16 +13,14 @@ Chrome extension for scraping web page content to feed the AI Q&A platform.
 2. **Icons:**
    - The extension uses `WebLoom.png` as the icon (already included)
 
-3. **Testing without backend (Test Mode):**
-   - You can test the extension even without the backend server running
-   - The extension will scrape content and show a preview
-   - It will display a message that the server is not available
-   - Scraped data is also stored in Chrome's local storage for testing
+3. **Authentication:**
+   - Sign up directly from the popup (email + password)
+   - The extension stores a short-lived JWT in Chrome storage
+   - You must be logged in before scraping pages
 
-4. **With backend server:**
-   - Start the server on `http://localhost:3001`
-   - The extension sends scraped data to `/api/scrape` endpoint
-   - Content will be saved to the database
+4. **Backend server:**
+   - Start the server on `http://localhost:3002` (or the port configured in `.env.local`)
+   - Scraped data is saved to `/api/scrape` with your auth token
 
 ## Usage
 
@@ -33,18 +31,17 @@ Chrome extension for scraping web page content to feed the AI Q&A platform.
 
 ## Features
 
-- Extracts main content from web pages (prioritizes article/main tags)
-- Sends scraped content with URL, title, and timestamp to backend
-- Test mode: Works without backend server (shows preview of scraped content)
-- Simple, clean popup UI with gradient design
-- Error handling and status feedback
-- Content preview in test mode
+- Login / Sign-up flow built into the popup (JWT stored in Chrome)
+- Extracts main content from web pages (article/main/body)
+- Sends scraped content with URL, title, timestamp, and user metadata to the backend
+- Status feedback for success/errors, plus 401 handling (logs out automatically)
+- Preview mode when backend is offline (content shown but not saved)
 
 ## Files
 
 - `manifest.json` - Extension configuration (Manifest V3)
 - `popup.html` - Extension popup UI
-- `popup.js` - Popup logic and API communication
+- `popup.js` - Auth logic + scraping + API communication
 - `content.js` - Content script that extracts page content
 - `styles.css` - Popup styling
 

@@ -10,14 +10,54 @@
   <div class="container">
     <h1>WebLoom</h1>
     <p class="subtitle">Scrape content for AI Q&A</p>
-    
-    <div class="status" id="status"></div>
-    
-    <button id="scrapeBtn" class="scrape-btn">
-      <span id="btnText">Scrape Page</span>
-    </button>
-    
-    <div class="info" id="info"></div>
+
+    <div id="authSection" class="card auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-tab="login">Login</button>
+        <button class="auth-tab" data-auth-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@example.com" required />
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required />
+
+        <button type="submit" class="scrape-btn">Log In</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@example.com" required />
+
+        <label>Password</label>
+        <input type="password" name="password" placeholder="At least 6 characters" required />
+
+        <button type="submit" class="scrape-btn">Create Account</button>
+      </form>
+
+      <p class="auth-hint">Use the same account across the extension and web dashboard.</p>
+      <div id="authMessage" class="auth-message"></div>
+    </div>
+
+    <div id="scrapeSection" class="hidden">
+      <div class="user-row">
+        <div>
+          <p class="helper">Signed in as</p>
+          <p class="user-email" id="userEmail"></p>
+        </div>
+        <button id="logoutBtn" class="secondary-btn">Log out</button>
+      </div>
+
+      <div class="status" id="status"></div>
+      
+      <button id="scrapeBtn" class="scrape-btn">
+        <span id="btnText">Scrape Page</span>
+      </button>
+      
+      <div class="info" id="info"></div>
+    </div>
   </div>
   
   <script src="popup.js"></script>

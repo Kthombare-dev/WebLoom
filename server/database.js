@@ -27,7 +27,21 @@ export async function initDatabase() {
       console.log('✅ New database created');
     }
 
-    // Create table if it doesn't exist
+    // Create users table for authentication
+    db.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    db.run(`
+      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)
+    `);
+
+    // Create scraped_content table if it doesn't exist
     db.run(`
       CREATE TABLE IF NOT EXISTS scraped_content (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,9 +49,13 @@ export async function initDatabase() {
         title TEXT,
         content TEXT NOT NULL,
         timestamp TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        user_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+
+    ensureScrapedContentHasUserId();
 
     // Create indexes for better performance
     db.run(`
@@ -78,15 +96,29 @@ async function ensureDb() {
   return db;
 }
 
-export async function insertScrapedContent(url, title, content, timestamp) {
+function ensureScrapedContentHasUserId() {
+  const pragma = db.exec(`PRAGMA table_info(scraped_content)`);
+  const hasUserId = pragma.length > 0 && pragma[0].values.some((row) => row[1] === 'user_id');
+  if (!hasUserId) {
+    db.run('ALTER TABLE scraped_content ADD COLUMN user_id INTEGER');
+  }
+}
+
+export async function insertScrapedContent(url, title, content, timestamp, userId = null) {
   await ensureDb();
   
   const stmt = db.prepare(`
-    INSERT INTO scraped_content (url, title, content, timestamp)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO scraped_content (url, title, content, timestamp, user_id)
+    VALUES (?, ?, ?, ?, ?)
   `);
   
-  stmt.bind([url, title || 'Untitled', content, timestamp || new Date().toISOString()]);
+  stmt.bind([
+    url,
+    title || 'Untitled',
+    content,
+    timestamp || new Date().toISOString(),
+    userId ?? null,
+  ]);
   stmt.step();
   stmt.free();
   
@@ -98,17 +130,20 @@ export async function insertScrapedContent(url, title, content, timestamp) {
   return id;
 }
 
-export async function getAllScrapedContent(limit = 100, offset = 0) {
+export async function getAllScrapedContent(limit = 100, offset = 0, userId = null) {
   await ensureDb();
-  
-  const stmt = db.prepare(`
-    SELECT id, url, title, content, timestamp, created_at
+
+  const query = `
+    SELECT id, url, title, content, timestamp, created_at, user_id
     FROM scraped_content
+    ${userId ? 'WHERE user_id = ?' : ''}
     ORDER BY created_at DESC
     LIMIT ? OFFSET ?
-  `);
-  
-  stmt.bind([limit, offset]);
+  `;
+
+  const stmt = db.prepare(query);
+  const params = userId ? [userId, limit, offset] : [limit, offset];
+  stmt.bind(params);
   
   const results = [];
   while (stmt.step()) {
@@ -147,19 +182,23 @@ export async function getScrapedContentById(id) {
   return result;
 }
 
-export async function searchScrapedContent(query, limit = 50) {
+export async function searchScrapedContent(query, userId = null, limit = 50) {
   await ensureDb();
   
   const stmt = db.prepare(`
-    SELECT id, url, title, content, timestamp, created_at
+    SELECT id, url, title, content, timestamp, created_at, user_id
     FROM scraped_content
-    WHERE content LIKE ? OR title LIKE ?
+    WHERE (content LIKE ? OR title LIKE ?)
+    ${userId ? 'AND user_id = ?' : ''}
     ORDER BY created_at DESC
     LIMIT ?
   `);
   
   const searchTerm = `%${query}%`;
-  stmt.bind([searchTerm, searchTerm, limit]);
+  const params = userId
+    ? [searchTerm, searchTerm, userId, limit]
+    : [searchTerm, searchTerm, limit];
+  stmt.bind(params);
   
   const results = [];
   while (stmt.step()) {
@@ -178,10 +217,17 @@ export async function searchScrapedContent(query, limit = 50) {
   return results;
 }
 
-export async function getContentCount() {
+export async function getContentCount(userId = null) {
   await ensureDb();
   
-  const stmt = db.prepare('SELECT COUNT(*) as count FROM scraped_content');
+  const stmt = db.prepare(
+    userId
+      ? 'SELECT COUNT(*) as count FROM scraped_content WHERE user_id = ?'
+      : 'SELECT COUNT(*) as count FROM scraped_content'
+  );
+  if (userId) {
+    stmt.bind([userId]);
+  }
   stmt.step();
   const result = stmt.getAsObject();
   stmt.free();
@@ -189,11 +235,14 @@ export async function getContentCount() {
   return result.count;
 }
 
-export async function deleteScrapedContent(id) {
+export async function deleteScrapedContent(id, userId = null) {
   await ensureDb();
   
-  const stmt = db.prepare('DELETE FROM scraped_content WHERE id = ?');
-  stmt.bind([id]);
+  const stmt = db.prepare(
+    userId ? 'DELETE FROM scraped_content WHERE id = ? AND user_id = ?' : 'DELETE FROM scraped_content WHERE id = ?'
+  );
+  const params = userId ? [id, userId] : [id];
+  stmt.bind(params);
   stmt.step();
   const changes = db.getRowsModified();
   stmt.free();
@@ -204,4 +253,47 @@ export async function deleteScrapedContent(id) {
   }
   
   return false;
+}
+
+export async function createUser(email, passwordHash) {
+  await ensureDb();
+
+  const stmt = db.prepare(`
+    INSERT INTO users (email, password)
+    VALUES (?, ?)
+  `);
+  stmt.bind([email, passwordHash]);
+  stmt.step();
+  stmt.free();
+
+  const result = db.exec('SELECT last_insert_rowid() as id');
+  const id = result[0].values[0][0];
+  saveDatabase();
+  return id;
+}
+
+export async function getUserByEmail(email) {
+  await ensureDb();
+  const stmt = db.prepare(`
+    SELECT id, email, password, created_at
+    FROM users
+    WHERE email = ?
+  `);
+  stmt.bind([email]);
+  const user = stmt.step() ? stmt.getAsObject() : null;
+  stmt.free();
+  return user;
+}
+
+export async function getUserById(id) {
+  await ensureDb();
+  const stmt = db.prepare(`
+    SELECT id, email, password, created_at
+    FROM users
+    WHERE id = ?
+  `);
+  stmt.bind([id]);
+  const user = stmt.step() ? stmt.getAsObject() : null;
+  stmt.free();
+  return user;
 }

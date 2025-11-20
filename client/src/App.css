@@ -1,0 +1,341 @@
+.app-shell {
+  min-height: 100vh;
+  padding: 3rem clamp(1.5rem, 5vw, 4rem);
+  background: radial-gradient(circle at top, #eef2ff, #f5f7ff 40%, #ffffff 70%);
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 24px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: #0f172a;
+  color: white;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: #c7d2fe;
+  margin-bottom: 0.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0 0 0.5rem;
+}
+
+.subtitle {
+  max-width: 640px;
+  color: #cbd5f5;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.status-tag {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-tag .dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.7);
+}
+
+.status-tag .dot.offline {
+  background: #f87171;
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.7);
+}
+
+.status-tag a {
+  color: #9db4ff;
+  text-decoration: underline;
+}
+
+.link-button {
+  background: transparent;
+  border: none;
+  color: #c3d5ff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  text-decoration: underline;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.auth-panel {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.auth-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.auth-mode-toggle button {
+  flex: 1;
+  padding: 0.65rem 0;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+}
+
+.auth-mode-toggle button.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
+}
+
+.auth-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-panel label {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.auth-panel input {
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  padding: 0.85rem;
+  font-size: 1rem;
+}
+
+.auth-panel button {
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-weight: 600;
+  padding: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+
+.auth-panel button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.card {
+  background: white;
+  border-radius: 24px;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.qa-card textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.qa-card textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.qa-card button {
+  margin-top: 1rem;
+  width: 100%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.qa-card button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+
+.qa-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.helper-text {
+  color: #64748b;
+  margin: 0.35rem 0 0;
+}
+
+.qa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.answer-block {
+  margin-top: 1.5rem;
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.answer-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6366f1;
+  margin-bottom: 0.5rem;
+}
+
+.references ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.references {
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.references::-webkit-scrollbar {
+  width: 6px;
+}
+
+.references::-webkit-scrollbar-thumb {
+  background: rgba(79, 70, 229, 0.4);
+  border-radius: 999px;
+}
+
+.references li a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timestamp {
+  font-size: 0.85rem;
+  color: #475569;
+  background: rgba(148, 163, 184, 0.15);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+}
+
+.content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.content-item {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: #fbfcff;
+}
+
+.content-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.content-item h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.content-item p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.content-item a {
+  align-self: flex-start;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.08);
+  color: #b91c1c;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.app-footer {
+  text-align: center;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .content-item {
+    padding: 1rem;
+  }
+}

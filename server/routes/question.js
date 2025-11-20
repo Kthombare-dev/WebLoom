@@ -16,11 +16,13 @@ router.post('/', async (req, res) => {
     }
 
     // Search for relevant content
-    let searchResults = await searchScrapedContent(question, 10);
+    const userId = req.user?.id || null;
+
+    let searchResults = await searchScrapedContent(question, userId, 10);
     
     // If no search results, get recent content to use with AI
     if (searchResults.length === 0) {
-      const allContent = await getAllScrapedContent(5, 0);
+      const allContent = await getAllScrapedContent(5, 0, userId);
       if (allContent.length > 0) {
         // Use recent content even if search didn't match
         searchResults = allContent;
