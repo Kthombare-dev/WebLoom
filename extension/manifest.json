@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "WebLoom Scraper",
+  "version": "1.0.0",
+  "description": "Scrape web content for AI-powered Q&A platform",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:3001/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "WebLoom.png",
+      "48": "WebLoom.png",
+      "128": "WebLoom.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "WebLoom.png",
+    "48": "WebLoom.png",
+    "128": "WebLoom.png"
+  }
+}
+

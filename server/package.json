@@ -1,0 +1,28 @@
+{
+  "name": "webloom-server",
+  "version": "1.0.0",
+  "description": "Backend server for WebLoom AI Q&A platform",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "webloom",
+    "ai",
+    "qa",
+    "scraping"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "sql.js": "^1.10.3",
+    "@google/generative-ai": "^0.2.1"
+  },
+  "devDependencies": {}
+}
+
