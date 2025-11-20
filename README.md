@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/d8ff4eaa-ebcb-4438-8e2b-3b5633d611b1
+
 # WebLoom – Chrome Extension + AI-Powered Q&A Platform
 
 WebLoom lets you scrape any article or document with a Chrome extension, store it securely per user, and ask natural-language questions against your own knowledge base using Gemini AI. The stack includes:
