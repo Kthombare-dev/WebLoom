@@ -1,5 +1,3 @@
-Here’s a full `README.md` you can drop at the repo root:
-
 ---
 
 # WebLoom – Chrome Extension + AI-Powered Q&A Platform
