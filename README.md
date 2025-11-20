@@ -1,4 +1,6 @@
 https://github.com/user-attachments/assets/d8ff4eaa-ebcb-4438-8e2b-3b5633d611b1
+<img width="1918" height="908" alt="image" src="https://github.com/user-attachments/assets/8be313ff-32ff-460d-b972-4f2ffb7f0ff2" />
+
 
 # WebLoom – Chrome Extension + AI-Powered Q&A Platform
 
